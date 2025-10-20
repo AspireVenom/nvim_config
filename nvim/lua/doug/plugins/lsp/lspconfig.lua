@@ -18,6 +18,14 @@ return {
 			callback = function(ev)
 				local opts = { buffer = ev.buf, silent = true }
 
+				-- Format on save
+				if ev.data and ev.data.client_id then
+					local client = vim.lsp.get_client_by_id(ev.data.client_id)
+					if client and client.supports_method("textDocument/formatting") then
+						local format_group = vim.api.nvim_create_augroup("LspFormatting", { clear = true })
+						vim.api.nvim_clear_autocmds({ group = format_group, buffer = ev.buf })
+					end
+				end
 				local mappings = {
 					{ "n", "gR", "<cmd>Telescope lsp_references<CR>", "Show LSP references" },
 					{ "n", "gD", vim.lsp.buf.declaration, "Go to declaration" },
